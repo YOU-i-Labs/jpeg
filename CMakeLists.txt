@@ -96,8 +96,15 @@ check_function_exists(tmpfile HAVE_TMPFILE_FUNC)
 check_symbol_exists(mktemp stdlib.h HAVE_MKTEMP_SYMBOL)
 check_function_exists(mktemp HAVE_MKTEMP_FUNC)
 
+check_symbol_exists(getenv stdlib.h HAVE_GETENV_SYMBOL)
+check_function_exists(getenv HAVE_GETENV_FUNC)
+
 if( NOT ( HAVE_MKTEMP_SYMBOL AND HAVE_MKTEMP_FUNC AND HAVE_MKTEMP_DEFINITION) )
   set(NO_MKTEMP 1)
+endif()
+
+if( NOT ( HAVE_GETENV_SYMBOL AND HAVE_GETENV_FUNC) )
+	add_definitions("-DNO_GETENV")
 endif()
 
 # See if compiler supports prototypes.
@@ -312,7 +319,13 @@ set(TESTFILES testorig.jpg testimg.ppm testimg.bmp testimg.jpg testprog.jpg
   testimgp.jpg)
 
 set(jpeg_LIB_SRCS ${LIBSOURCES} jquant2.c ${INSTINCLUDES} ${OTHERINCLUDES})
-add_library(jpeg ${jpeg_LIB_SRCS})
+
+if(USE_STATIC_LIB)
+	set(JPEG_LIB_TYPE STATIC)
+else()
+	set(JPEG_LIB_TYPE SHARED)
+endif()
+add_library(jpeg ${JPEG_LIB_TYPE} ${jpeg_LIB_SRCS})
 
 set_target_properties(jpeg PROPERTIES VERSION 9.0 SOVERSION 9
   PUBLIC_HEADER "${INSTINCLUDES}"
