@@ -337,47 +337,50 @@ endif()
 
 ########### Executables ###############
 
-set(cjpeg_SRCS
-    cjpeg.c
-    rdppm.c
-    rdgif.c
-    rdtarga.c
-    rdrle.c
-    rdbmp.c
-    rdswitch.c
-    cdjpeg.c)
-add_executable(cjpeg ${cjpeg_SRCS})
-target_link_libraries(cjpeg jpeg)
+if (NOT TVOS)
 
-set(djpeg_SRCS
-    djpeg.c
-    wrppm.c
-    wrgif.c
-    wrtarga.c
-    wrrle.c
-    wrbmp.c
-    rdcolmap.c
-    cdjpeg.c)
-add_executable(djpeg ${djpeg_SRCS})
-target_link_libraries(djpeg jpeg)
+  set(cjpeg_SRCS
+      cjpeg.c
+      rdppm.c
+      rdgif.c
+      rdtarga.c
+      rdrle.c
+      rdbmp.c
+      rdswitch.c
+      cdjpeg.c)
+  add_executable(cjpeg ${cjpeg_SRCS})
+  target_link_libraries(cjpeg jpeg)
 
-set(jpegtran_SRCS
-    jpegtran.c
-    rdswitch.c
-    cdjpeg.c
-    transupp.c)
-add_executable(jpegtran ${jpegtran_SRCS})
-target_link_libraries(jpegtran jpeg)
+  set(djpeg_SRCS
+      djpeg.c
+      wrppm.c
+      wrgif.c
+      wrtarga.c
+      wrrle.c
+      wrbmp.c
+      rdcolmap.c
+      cdjpeg.c)
+  add_executable(djpeg ${djpeg_SRCS})
+  target_link_libraries(djpeg jpeg)
 
-add_executable(rdjpgcom rdjpgcom.c)
-target_include_directories(rdjpgcom PRIVATE "${CMAKE_BINARY_DIR}/include")
+  set(jpegtran_SRCS
+      jpegtran.c
+      rdswitch.c
+      cdjpeg.c
+      transupp.c)
+  add_executable(jpegtran ${jpegtran_SRCS})
+  target_link_libraries(jpegtran jpeg)
+
+  add_executable(rdjpgcom rdjpgcom.c)
+  target_include_directories(rdjpgcom PRIVATE "${CMAKE_BINARY_DIR}/include")
 
 
-add_executable(wrjpgcom wrjpgcom.c)
-target_include_directories(wrjpgcom PRIVATE "${CMAKE_BINARY_DIR}/include")
+  add_executable(wrjpgcom wrjpgcom.c)
+  target_include_directories(wrjpgcom PRIVATE "${CMAKE_BINARY_DIR}/include")
 
-set_target_properties(cjpeg djpeg jpegtran rdjpgcom wrjpgcom  PROPERTIES FOLDER
-  Executables/jpeg)
+  set_target_properties(cjpeg djpeg jpegtran rdjpgcom wrjpgcom  PROPERTIES FOLDER
+    Executables/jpeg)
+endif()
 
 ########## setup configuration headers ###########
 
@@ -401,7 +404,7 @@ configure_package_config_file("cmake/Config.cmake.in"
 
 ########### install files ###############
 
-if(IOS)
+if(IOS OR TVOS)
   set(libs_to_install jpeg)
 else()
   set(libs_to_install jpeg cjpeg djpeg jpegtran rdjpgcom wrjpgcom)
@@ -423,7 +426,7 @@ install(FILES "${CMAKE_BINARY_DIR}/lib/cmake/JPEGConfigVersion.cmake"
 ################### TESTS
 enable_testing()
 
-if(ANDROID OR IOS)
+if(ANDROID OR IOS OR TVOS)
   add_test(
       NAME DummyTest
       COMMAND "${CMAKE_COMMAND}" -E echo "Skipping tests (Android/iOS)"
