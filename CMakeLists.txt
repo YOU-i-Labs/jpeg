@@ -337,7 +337,7 @@ endif()
 
 ########### Executables ###############
 
-if (NOT TVOS)
+if (NOT TVOS AND NOT TIZEN_NACL)
 
   set(cjpeg_SRCS
       cjpeg.c
@@ -404,7 +404,7 @@ configure_package_config_file("cmake/Config.cmake.in"
 
 ########### install files ###############
 
-if(IOS OR TVOS)
+if(IOS OR TVOS OR TIZEN_NACL)
   set(libs_to_install jpeg)
 else()
   set(libs_to_install jpeg cjpeg djpeg jpegtran rdjpgcom wrjpgcom)
@@ -426,10 +426,10 @@ install(FILES "${CMAKE_BINARY_DIR}/lib/cmake/JPEGConfigVersion.cmake"
 ################### TESTS
 enable_testing()
 
-if(ANDROID OR IOS OR TVOS)
+if(ANDROID OR IOS OR TVOS OR TIZEN_NACL)
   add_test(
       NAME DummyTest
-      COMMAND "${CMAKE_COMMAND}" -E echo "Skipping tests (Android/iOS)"
+      COMMAND "${CMAKE_COMMAND}" -E echo "Skipping tests (Android/iOS/TizenNaCl)"
   )
 else()
   add_test(NAME djpeg-test1 COMMAND
