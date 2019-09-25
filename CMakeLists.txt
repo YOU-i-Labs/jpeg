@@ -67,10 +67,14 @@ check_include_file(strings.h HAVE_STRINGS_H)
 if( HAVE_STRINGS_H AND NOT HAVE_STRING_H )
   set(NEED_BSD_STRINGS 1)
 endif()
-if(IOS)
+if(IOS OR TVOS)
   set(HAVE_UNSIGNED_CHAR 1)
   set(HAVE_UNSIGNED_SHORT 1)
   set(HAVE_SYS_TYPES_H 1)
+  set(HAVE_C_CONST 1)
+  set(HAVE_PROTOTYPES 1)
+  set(HAVE_VOID 1)
+  set(HAVE_LIMITS_H 1)
 else()
   check_type_size(size_t SIZE_T) # -> HAVE_SIZE_T
   if( NOT HAVE_SIZE_T )
@@ -321,6 +325,10 @@ set(TESTFILES testorig.jpg testimg.ppm testimg.bmp testimg.jpg testprog.jpg
 set(jpeg_LIB_SRCS ${LIBSOURCES} jquant2.c ${INSTINCLUDES} ${OTHERINCLUDES})
 add_library(jpeg ${jpeg_LIB_SRCS})
 
+if (IOS OR TVOS)
+  target_compile_options(jpeg PRIVATE -Wno-implicit-function-declaration)
+endif()
+
 set_target_properties(jpeg PROPERTIES VERSION 9.0 SOVERSION 9
   PUBLIC_HEADER "${INSTINCLUDES}"
   DEFINE_SYMBOL "JPEG_DLL_EXPORTS"
@@ -344,7 +352,7 @@ endif()
 
 ########### Executables ###############
 
-if (NOT TVOS AND NOT TIZEN_NACL)
+if (NOT TVOS AND NOT IOS AND NOT TIZEN_NACL)
 
   set(cjpeg_SRCS
       cjpeg.c
